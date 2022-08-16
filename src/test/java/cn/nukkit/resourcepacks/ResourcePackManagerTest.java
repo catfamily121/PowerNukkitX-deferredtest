@@ -11,23 +11,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(PowerNukkitExtension.class)
 class ResourcePackManagerTest {
 
     ResourcePackManager resourcePackManager;
-    Path temp;
+    Path resource;
+    Path behavior;
 
     @BeforeEach
     void setUp() throws IOException {
-        temp = Files.createTempDirectory("ResourcePackManagerTest_");
-        resourcePackManager = new ResourcePackManager(temp.toFile());
+        resource = Files.createTempDirectory("ResourcePackTest_");
+        behavior = Files.createTempDirectory("BehaviorPackTest_");
+        resourcePackManager = new ResourcePackManager(resource.toFile(), behavior.toFile());
     }
 
     @AfterEach
     void tearDown() {
-        FileUtils.deleteRecursively(temp.toFile());
+        FileUtils.deleteRecursively(resource.toFile());
+        FileUtils.deleteRecursively(behavior.toFile());
     }
 
     @Test
@@ -35,7 +38,7 @@ class ResourcePackManagerTest {
         assertEquals(1024*100, resourcePackManager.getMaxChunkSize());
         resourcePackManager.setMaxChunkSize(1024);
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
-        ResourcePackManager other = new ResourcePackManager(temp.toFile());
+        ResourcePackManager other = new ResourcePackManager(resource.toFile(), behavior.toFile());
         assertEquals(1024*100, other.getMaxChunkSize());
         assertEquals(1024, resourcePackManager.getMaxChunkSize());
     }

@@ -70,6 +70,7 @@ import cn.nukkit.positiontracking.PositionTracking;
 import cn.nukkit.positiontracking.PositionTrackingService;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.resourcepacks.ResourcePack;
+import cn.nukkit.resourcepacks.ResourcePackManager;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.scheduler.TaskHandler;
@@ -2366,8 +2367,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.checkMovement = false;
         }
 
+        ResourcePackManager resourcePackManager = this.server.getResourcePackManager();
         ResourcePacksInfoPacket infoPacket = new ResourcePacksInfoPacket();
-        infoPacket.resourcePackEntries = this.server.getResourcePackManager().getResourceStack();
+        infoPacket.resourcePackEntries = resourcePackManager.getResourcePacks();
+        infoPacket.behaviourPackEntries = resourcePackManager.getBehaviorPacks();
+        infoPacket.scripting = Arrays.stream(infoPacket.behaviourPackEntries).anyMatch(ResourcePack::requiresScripting);
         infoPacket.mustAccept = this.server.getForceResources();
         this.dataPacket(infoPacket);
     }
@@ -2684,6 +2688,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 }
 
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
+                                switch (resourcePack.getType()) {
+                                    case RESOURCE_PACK:
+                                        dataInfoPacket.type = ResourcePackDataInfoPacket.TYPE_RESOURCE;
+                                        break;
+                                    case BEHAVIOR_PACK:
+                                        dataInfoPacket.type = ResourcePackDataInfoPacket.TYPE_BEHAVIOR;
+                                        break;
+                                }
                                 dataInfoPacket.packId = resourcePack.getPackId();
                                 dataInfoPacket.setPackVersion(new Version(resourcePack.getPackVersion()));
                                 dataInfoPacket.maxChunkSize = server.getResourcePackManager().getMaxChunkSize(); // 102400 is default
@@ -2696,18 +2708,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         case ResourcePackClientResponsePacket.STATUS_HAVE_ALL_PACKS:
                             ResourcePackStackPacket stackPacket = new ResourcePackStackPacket();
                             stackPacket.mustAccept = this.server.getForceResources();
-                            stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourceStack();
+                            stackPacket.resourcePackStack = this.server.getResourcePackManager().getResourcePacks();
+                            stackPacket.behaviourPackStack = this.server.getResourcePackManager().getBehaviorPacks();
 
                             if (this.getServer().isEnableExperimentMode()) {
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("wild_update", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("wild_update", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("spectator_mode", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("vanilla_experiments", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("vanilla_experiments", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                                 );
@@ -2720,9 +2733,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("gametest", true)
                                 );
-                                stackPacket.experiments.add(
-                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
-                                );
+//                                stackPacket.experiments.add(
+//                                        new ResourcePackStackPacket.ExperimentData("experimental_custom_ui", true)
+//                                );
                                 stackPacket.experiments.add(
                                         new ResourcePackStackPacket.ExperimentData("experimental_molang_features", true)
                                 );

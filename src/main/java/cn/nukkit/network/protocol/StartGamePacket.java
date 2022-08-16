@@ -14,9 +14,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @since 15-10-13
@@ -153,7 +150,21 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.isTexturePacksRequired);
         this.putGameRules(this.gameRules);
         this.putLInt(0); // Experiment count
-        this.putBoolean(false); // Were experiments previously toggled
+        {
+            this.putString("spectator_mode");
+            this.putBoolean(true);
+            this.putString("data_driven_items");
+            this.putBoolean(true);
+            this.putString("data_driven_biomes");
+            this.putBoolean(true);
+            this.putString("upcoming_creator_features");
+            this.putBoolean(true);
+            this.putString("gametest");
+            this.putBoolean(true);
+            this.putString("experimental_molang_features");
+            this.putBoolean(true);
+        }
+        this.putBoolean(true); // Were experiments previously toggled
         this.putBoolean(this.bonusChest);
         this.putBoolean(this.hasStartWithMapEnabled);
         this.putVarInt(this.permissionLevel);
@@ -173,7 +184,7 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(false); // Nether type
         this.putString(""); // EduSharedUriResource buttonName
         this.putString(""); // EduSharedUriResource linkUri
-        this.putBoolean(false); // Experimental Gameplay
+        this.putBoolean(true); // Experimental Gameplay
         this.putByte(this.chatRestrictionLevel);
         this.putBoolean(this.disablePlayerInteractions);
         /* Level settings end */

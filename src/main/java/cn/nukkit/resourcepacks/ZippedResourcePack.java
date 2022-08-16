@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -19,6 +20,7 @@ import java.util.zip.ZipFile;
 public class ZippedResourcePack extends AbstractResourcePack {
     private File file;
     private byte[] sha256 = null;
+    private boolean requiresScripting = false;
 
     @PowerNukkitDifference(info = "Accepts resource packs with subfolder structure", since = "1.4.0.0-PN")
     public ZippedResourcePack(File file) {
@@ -42,13 +44,22 @@ public class ZippedResourcePack extends AbstractResourcePack {
                             return fe.getParent() == null || fe.getParentFile().getParent() == null;
                         })
                         .findFirst()
-                        .orElseThrow(()-> new IllegalArgumentException(
+                        .orElseThrow(() -> new IllegalArgumentException(
                                 Server.getInstance().getLanguage().translateString("nukkit.resources.zip.no-manifest")));
             }
-            
             this.manifest = new JsonParser()
                     .parse(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
                     .getAsJsonObject();
+
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+
+                if (zipEntry.getName().endsWith(".js")) {
+                    // once a JavaScript file is found in the zip, we assume it is a behavior script
+                    this.requiresScripting = true;
+                }
+            }
         } catch (IOException e) {
             log.error("An error occurred while loading the zipped resource pack {}", file, e);
         }
@@ -94,5 +105,10 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         return chunk;
+    }
+
+    @Override
+    public boolean requiresScripting() {
+        return this.getType().equals(Type.BEHAVIOR_PACK) ? this.requiresScripting : false;
     }
 }
