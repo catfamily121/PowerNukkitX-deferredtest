@@ -1,7 +1,8 @@
 name: PowerNukkitX
 
-on: [ push, pull_request ]
-
+on:
+  workflow_dispatch:
+  
 jobs:
   move-tag:
     runs-on: ubuntu-latest
