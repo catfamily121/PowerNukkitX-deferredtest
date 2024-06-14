@@ -172,7 +172,7 @@ public class StartGamePacket extends DataPacket {
         byteBuf.writeBoolean(this.isTexturePacksRequired);
         byteBuf.writeGameRules(this.gameRules);
 
-        byteBuf.writeIntLE(6); // Experiment count
+        byteBuf.writeIntLE(7); // Experiment count
         {
             byteBuf.writeString("data_driven_items");
             byteBuf.writeBoolean(true);
@@ -181,6 +181,8 @@ public class StartGamePacket extends DataPacket {
             byteBuf.writeString("upcoming_creator_features");
             byteBuf.writeBoolean(true);
             byteBuf.writeString("gametest");
+            byteBuf.writeBoolean(true);
+            byteBuf.writeString("deferred_technical_preview");
             byteBuf.writeBoolean(true);
             byteBuf.writeString("experimental_molang_features");
             byteBuf.writeBoolean(true);
