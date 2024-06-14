@@ -327,6 +327,8 @@ public class LevelDat {
         @Builder.Default
         boolean dataDrivenItems = false;
         @Builder.Default
+        boolean DeferredPrev = false;
+        @Builder.Default
         boolean experimentalMolangFeatures = false;
         @Builder.Default
         boolean gametest = false;
