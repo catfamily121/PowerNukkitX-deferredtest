@@ -59,6 +59,9 @@ public class ResourcePackHandler extends BedrockSessionPacketHandler {
                         new ResourcePackStackPacket.ExperimentData("data_driven_items", true)
                 );
                 stackPacket.experiments.add(
+                        new ResourcePackStackPacket.ExperimentData("deferred_technical_preview", true)
+                );
+                stackPacket.experiments.add(
                         new ResourcePackStackPacket.ExperimentData("data_driven_biomes", true)
                 );
                 stackPacket.experiments.add(
